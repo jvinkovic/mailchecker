@@ -2,6 +2,7 @@
 
 Email availability checker.
 Checks:
+
     - format
     - domain
     - inbox existence
