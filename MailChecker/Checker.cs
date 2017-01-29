@@ -70,17 +70,25 @@ namespace MailChecker
                             MethodInvoker actionStart = () => _uiForm.UpdateLog(i, "Started inbox check on mail servers: " + string.Join(" | ", mxRecords.Select(mx => mx.EXCHANGE.TrimEnd('.')).ToArray()));
                             _uiForm.BeginInvoke(actionStart);
 
-                            // check inbox
-                            bool inboxValid = CheckInbox(mail, mxRecords, out status);
+                            try
+                            {
+                                // check inbox
+                                bool inboxValid = CheckInbox(mail, mxRecords, out status);
 
-                            if (inboxValid)
-                            {
-                                MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Valid, i, mail, "Valid");
-                                _uiForm.BeginInvoke(action);
+                                if (inboxValid)
+                                {
+                                    MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Valid, i, mail, "Valid");
+                                    _uiForm.BeginInvoke(action);
+                                }
+                                else
+                                {
+                                    MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Invalid, i, mail, "No such mail address on domain mail servers OR mail address is NOT RECHABLE");
+                                    _uiForm.BeginInvoke(action);
+                                }
                             }
-                            else
+                            catch (Exception e)
                             {
-                                MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Invalid, i, mail, "No such mail address on domain mail servers or mail address is not reachable");
+                                MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Unknown, i, mail, e.Message);
                                 _uiForm.BeginInvoke(action);
                             }
                         }
@@ -111,24 +119,25 @@ namespace MailChecker
 
         private bool CheckInbox(string mail, RecordMX[] mxRecords, out string status)
         {
-            status = "Mail server not responding";
+            status = "-";
 
-            try
+            bool valid = false;
+            for (int i = 0; i < mxRecords.Length; i++)
             {
-                bool valid = false;
-                for (int i = 0; i < mxRecords.Length; i++)
+                try
                 {
                     valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, MailFrom);
                     if (valid)
                         break;
                 }
+                catch (Exception e)
+                {
+                    if (i == mxRecords.Length - 1)
+                        throw e;
+                }
+            }
 
-                return valid;
-            }
-            catch
-            {
-                return false;
-            }
+            return valid;
         }
 
         /// <summary>

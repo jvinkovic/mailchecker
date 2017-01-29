@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Resolver.DNS;
 
 namespace Resolver.DNS
 {
@@ -17,16 +18,32 @@ namespace Resolver.DNS
 
         public static bool VerifySmtpResponse(string strSmtpServerURL, string strEmailAddress, out string status, string MailFrom = "noreply.mailchecker@yahoo.com")
         {
-            IPHostEntry hostEntry = Dns.GetHostEntry(strSmtpServerURL);
+            //IPHostEntry hostEntry = Dns.GetHostEntry(strSmtpServerURL);
+            Resolver objResolver = new Resolver();
+            IPHostEntry hostEntry = objResolver.GetHostEntry(strSmtpServerURL);
+
             IPEndPoint endPoint = new IPEndPoint(hostEntry.AddressList[0], 25);
 
-            bool esmtp = false;
-            bool gsmtp = false;
-
-            ResponseData response;
             Socket tcpSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            tcpSocket.Connect(endPoint);
+            for (int i = 0; i < hostEntry.AddressList.Count(); i++)
+            {
+                try
+                {
+                    endPoint = new IPEndPoint(hostEntry.AddressList[i], 25);
+                    tcpSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+                    tcpSocket.Connect(endPoint);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    if (i == hostEntry.AddressList.Count() - 1)
+                        throw e;
+                }
+            }
+
+            ResponseData response;
 
             if (!CheckResponse(tcpSocket, new int[] { 220, 200 }, out response))
             {
@@ -35,10 +52,9 @@ namespace Resolver.DNS
                 return false;
             }
 
+            // string host = "PWS3.mxtoolbox.com";
             string host = Dns.GetHostName();
 
-            // HACK always HELLO
-            //esmtp = false;
             if (response.Esmtp)
             {
                 //EHLO server
@@ -88,11 +104,23 @@ namespace Resolver.DNS
                     return false;
                 }
 
+                if (response.ResponseText.ToLower().Contains("block"))
+                {
+                    tcpSocket.Close();
+                    throw new Exception(response.ResponseText);
+                }
+
                 if (response.Gsmtp)
                 {
                     SendData(tcpSocket, string.Format("RCPT TO:{0} <{0}>\r\n", strEmailAddress));
                     if (!CheckResponse(tcpSocket, new int[] { 200, 250, 251 }, out response))
                     {
+                        if (response.ResponseText.ToLower().Contains("block"))
+                        {
+                            tcpSocket.Close();
+                            throw new Exception(response.ResponseText);
+                        }
+
                         tcpSocket.Close();
                         status = "RCPT refused: " + response.ResponseText;
                         return false;
@@ -103,6 +131,12 @@ namespace Resolver.DNS
                     SendData(tcpSocket, string.Format("RCPT TO:{0}\r\n", strEmailAddress));
                     if (!CheckResponse(tcpSocket, new int[] { 200, 250, 251 }, out response))
                     {
+                        if (response.ResponseText.ToLower().Contains("block"))
+                        {
+                            tcpSocket.Close();
+                            throw new Exception(response.ResponseText);
+                        }
+
                         tcpSocket.Close();
                         status = "RCPT refused: " + response.ResponseText;
                         return false;

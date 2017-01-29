@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -15,7 +17,6 @@ namespace MailChecker
     public partial class MailChecker : Form
     {
         private ListView allItemsLv = new ListView();
-        private List<int> queue = new List<int>();
 
         internal ListView.ListViewItemCollection lvMailsData;
         private FileStream file;
@@ -36,6 +37,8 @@ namespace MailChecker
         public MailChecker()
         {
             InitializeComponent();
+
+            lvMails.DoubleBuffered(true);
         }
 
         private void lvMails_ColumWithChanging(object sender, ColumnWidthChangingEventArgs e)
@@ -191,6 +194,12 @@ namespace MailChecker
 
         private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult dialogResult = MessageBox.Show("Are you sure that you want to clear everything?", "Confirm clear all", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
+
             lblFilter.Text = "none";
             tbFind.Clear();
             tbMail.Clear();
@@ -237,8 +246,6 @@ namespace MailChecker
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            queue.Clear();
-
             btnPause.Enabled = true;
             btnStop.Enabled = true;
 
@@ -287,25 +294,6 @@ namespace MailChecker
             lblTime.Text = time.Hours.ToString("00") + ":" + time.Minutes.ToString("00") + ":" + time.Seconds.ToString("00");
         }
 
-        //TODO what with this??
-        internal void AddToQueue(int id)
-        {
-            queue.Add(id);
-        }
-
-        internal void RemoveFromQueue(int id)
-        {
-            queue.Remove(id);
-        }
-
-        internal void ProcessQueue()
-        {
-            foreach (var id in queue)
-            {
-                lvMails.Items[id].SubItems[2].Text += " --> NO RESPONSE FROM SERVERS";
-            }
-        }
-
         internal void UpdateLog(int id, string log)
         {
             lvMails.Items[id].SubItems[2].Text = log;
@@ -335,6 +323,11 @@ namespace MailChecker
                     disposable++;
                     lblDisposable.Text = disposable.ToString();
                     break;
+
+                case Validity.Unknown:
+                    lvMails.Items[mailID].SubItems[1].Text = "?";
+                    lvMails.Items[mailID].BackColor = Color.Chocolate;
+                    break;
             }
 
             lvMails.Items[mailID].SubItems[2].Text = status;
@@ -352,8 +345,6 @@ namespace MailChecker
 
             lblProcessed.Text = mailsNum + "/" + mailsNum;
             progressBar.Value = progressBar.Maximum;
-
-            ProcessQueue();
 
             btnStop_Click(null, null);
         }
@@ -380,8 +371,6 @@ namespace MailChecker
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            queue.Clear();
-
             progressBar.MarqueeAnimationSpeed = 0;
 
             btnStop.Enabled = false;

@@ -49,7 +49,7 @@ namespace Resolver.DNS
             {
                 new IPEndPoint(IPAddress.Parse("8.8.8.8"), DefaultPort),
                 new IPEndPoint(IPAddress.Parse("208.67.222.222"), DefaultPort)
-                // , new IPEndPoint(IPAddress.Parse("208.67.220.220"), DefaultPort)
+                 , new IPEndPoint(IPAddress.Parse("208.67.220.220"), DefaultPort)
             };
 
         private ushort m_Unique;

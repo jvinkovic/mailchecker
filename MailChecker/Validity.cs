@@ -9,6 +9,7 @@ namespace MailChecker
     {
         Valid,
         Invalid,
-        Disposable
+        Disposable,
+        Unknown
     }
 }
