@@ -41,6 +41,7 @@
             this.validToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.invalidToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disposableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.lvMails = new System.Windows.Forms.ListView();
             this.btnStart = new System.Windows.Forms.Button();
@@ -64,9 +65,12 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tbFind = new System.Windows.Forms.TextBox();
-            this.clearFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label9 = new System.Windows.Forms.Label();
             this.lblFilter = new System.Windows.Forms.Label();
+            this.tbHostname = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tbFrom = new System.Windows.Forms.TextBox();
             Email = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Validity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Log = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -86,7 +90,7 @@
             // Log
             // 
             Log.Text = "Log";
-            Log.Width = 160;
+            Log.Width = 414;
             // 
             // menuStrip
             // 
@@ -96,7 +100,7 @@
             this.filterToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(564, 24);
+            this.menuStrip.Size = new System.Drawing.Size(814, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -144,23 +148,30 @@
             // validToolStripMenuItem
             // 
             this.validToolStripMenuItem.Name = "validToolStripMenuItem";
-            this.validToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.validToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.validToolStripMenuItem.Text = "Valid";
             this.validToolStripMenuItem.Click += new System.EventHandler(this.validToolStripMenuItem_Click);
             // 
             // invalidToolStripMenuItem
             // 
             this.invalidToolStripMenuItem.Name = "invalidToolStripMenuItem";
-            this.invalidToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.invalidToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.invalidToolStripMenuItem.Text = "Invalid";
             this.invalidToolStripMenuItem.Click += new System.EventHandler(this.invalidToolStripMenuItem_Click);
             // 
             // disposableToolStripMenuItem
             // 
             this.disposableToolStripMenuItem.Name = "disposableToolStripMenuItem";
-            this.disposableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.disposableToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.disposableToolStripMenuItem.Text = "Disposable";
             this.disposableToolStripMenuItem.Click += new System.EventHandler(this.disposableToolStripMenuItem_Click);
+            // 
+            // clearFilterToolStripMenuItem
+            // 
+            this.clearFilterToolStripMenuItem.Name = "clearFilterToolStripMenuItem";
+            this.clearFilterToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.clearFilterToolStripMenuItem.Text = "Clear filter";
+            this.clearFilterToolStripMenuItem.Click += new System.EventHandler(this.clearFilterToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -175,6 +186,7 @@
             // lvMails
             // 
             this.lvMails.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.lvMails.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.lvMails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -189,7 +201,7 @@
             this.lvMails.Location = new System.Drawing.Point(15, 168);
             this.lvMails.Name = "lvMails";
             this.lvMails.ShowItemToolTips = true;
-            this.lvMails.Size = new System.Drawing.Size(537, 230);
+            this.lvMails.Size = new System.Drawing.Size(790, 230);
             this.lvMails.TabIndex = 3;
             this.lvMails.UseCompatibleStateImageBehavior = false;
             this.lvMails.View = System.Windows.Forms.View.Details;
@@ -336,7 +348,7 @@
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(465, 120);
+            this.btnExport.Location = new System.Drawing.Point(715, 120);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(87, 42);
             this.btnExport.TabIndex = 20;
@@ -347,7 +359,7 @@
             // tbMail
             // 
             this.tbMail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbMail.Location = new System.Drawing.Point(307, 30);
+            this.tbMail.Location = new System.Drawing.Point(557, 30);
             this.tbMail.Name = "tbMail";
             this.tbMail.Size = new System.Drawing.Size(245, 20);
             this.tbMail.TabIndex = 21;
@@ -355,7 +367,7 @@
             // btnAddMail
             // 
             this.btnAddMail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddMail.Location = new System.Drawing.Point(307, 56);
+            this.btnAddMail.Location = new System.Drawing.Point(557, 56);
             this.btnAddMail.Name = "btnAddMail";
             this.btnAddMail.Size = new System.Drawing.Size(75, 23);
             this.btnAddMail.TabIndex = 22;
@@ -367,7 +379,7 @@
             // 
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(266, 33);
+            this.label8.Location = new System.Drawing.Point(516, 33);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(35, 13);
             this.label8.TabIndex = 23;
@@ -376,7 +388,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(460, 56);
+            this.btnDelete.Location = new System.Drawing.Point(710, 56);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(92, 23);
             this.btnDelete.TabIndex = 24;
@@ -387,7 +399,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(304, 95);
+            this.label5.Location = new System.Drawing.Point(461, 145);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(30, 13);
             this.label5.TabIndex = 25;
@@ -395,18 +407,11 @@
             // 
             // tbFind
             // 
-            this.tbFind.Location = new System.Drawing.Point(340, 92);
+            this.tbFind.Location = new System.Drawing.Point(497, 142);
             this.tbFind.Name = "tbFind";
             this.tbFind.Size = new System.Drawing.Size(212, 20);
             this.tbFind.TabIndex = 26;
             this.tbFind.TextChanged += new System.EventHandler(this.tbFind_TextChanged);
-            // 
-            // clearFilterToolStripMenuItem
-            // 
-            this.clearFilterToolStripMenuItem.Name = "clearFilterToolStripMenuItem";
-            this.clearFilterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.clearFilterToolStripMenuItem.Text = "Clear filter";
-            this.clearFilterToolStripMenuItem.Click += new System.EventHandler(this.clearFilterToolStripMenuItem_Click);
             // 
             // label9
             // 
@@ -428,12 +433,48 @@
             this.lblFilter.TabIndex = 28;
             this.lblFilter.Text = "none";
             // 
+            // tbHostname
+            // 
+            this.tbHostname.Location = new System.Drawing.Point(360, 27);
+            this.tbHostname.Name = "tbHostname";
+            this.tbHostname.Size = new System.Drawing.Size(150, 20);
+            this.tbHostname.TabIndex = 29;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(256, 30);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(94, 13);
+            this.label10.TabIndex = 30;
+            this.label10.Text = "Custom hostname:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(256, 66);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(108, 13);
+            this.label11.TabIndex = 31;
+            this.label11.Text = "Custom from address:";
+            // 
+            // tbFrom
+            // 
+            this.tbFrom.Location = new System.Drawing.Point(360, 59);
+            this.tbFrom.Name = "tbFrom";
+            this.tbFrom.Size = new System.Drawing.Size(150, 20);
+            this.tbFrom.TabIndex = 32;
+            // 
             // MailChecker
             // 
             this.AcceptButton = this.btnAddMail;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(564, 411);
+            this.ClientSize = new System.Drawing.Size(814, 411);
+            this.Controls.Add(this.tbFrom);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.tbHostname);
             this.Controls.Add(this.lblFilter);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.tbFind);
@@ -462,7 +503,7 @@
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(580, 450);
+            this.MinimumSize = new System.Drawing.Size(830, 450);
             this.Name = "MailChecker";
             this.Text = "MailChecker";
             this.menuStrip.ResumeLayout(false);
@@ -509,6 +550,10 @@
         private System.Windows.Forms.ToolStripMenuItem clearFilterToolStripMenuItem;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.TextBox tbHostname;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox tbFrom;
     }
 }
 

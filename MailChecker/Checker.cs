@@ -11,8 +11,6 @@ namespace MailChecker
 {
     public class Checker
     {
-        private const string MailFrom = "kontaktdeseti@gmail.com";
-
         private enum SMTPResponse : int
         {
             CONNECT_SUCCESS = 220,
@@ -27,9 +25,13 @@ namespace MailChecker
         private string[] _mails;
 
         private MailChecker _uiForm;
+        private string _hostname;
+        private string _from;
 
-        public Checker(string[] mails, MailChecker form)
+        public Checker(string[] mails, MailChecker form, string hostname = "", string from = "")
         {
+            _from = from;
+            _hostname = hostname;
             _uiForm = form;
             _mails = mails;
         }
@@ -73,7 +75,7 @@ namespace MailChecker
                             try
                             {
                                 // check inbox
-                                bool inboxValid = CheckInbox(mail, mxRecords, out status);
+                                bool inboxValid = CheckInbox(mail, mxRecords, out status, _hostname, _from);
 
                                 if (inboxValid)
                                 {
@@ -82,7 +84,15 @@ namespace MailChecker
                                 }
                                 else
                                 {
-                                    MethodInvoker action = () => _uiForm.UpdateProgress(Validity.Invalid, i, mail, "No such mail address on domain mail servers OR mail address is NOT RECHABLE");
+                                    string stat = "No mail on domain mail servers OR NOT RECHABLE: " + status;
+                                    Validity val = Validity.Invalid;
+                                    if (status.Contains("#UNCERTAIN#"))
+                                    {
+                                        stat = status;
+                                        val = Validity.Unknown;
+                                    }
+
+                                    MethodInvoker action = () => _uiForm.UpdateProgress(val, i, mail, stat);
                                     _uiForm.BeginInvoke(action);
                                 }
                             }
@@ -117,7 +127,7 @@ namespace MailChecker
             _uiForm.BeginInvoke(actionFinish);
         }
 
-        private bool CheckInbox(string mail, RecordMX[] mxRecords, out string status)
+        private bool CheckInbox(string mail, RecordMX[] mxRecords, out string status, string hostname = "", string from = "")
         {
             status = "-";
 
@@ -126,7 +136,15 @@ namespace MailChecker
             {
                 try
                 {
-                    valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, MailFrom);
+                    if (from != "")
+                    {
+                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, hostname, from);
+                    }
+                    else
+                    {
+                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, hostname);
+                    }
+
                     if (valid)
                         break;
                 }

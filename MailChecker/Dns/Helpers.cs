@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Resolver.DNS;
 
 namespace Resolver.DNS
 {
@@ -16,7 +15,10 @@ namespace Resolver.DNS
             public bool Gsmtp { get; set; }
         }
 
-        public static bool VerifySmtpResponse(string strSmtpServerURL, string strEmailAddress, out string status, string MailFrom = "noreply.mailchecker@yahoo.com")
+        private static int[] uncertainCodes = new int[] { 420, 421,432, 441, 442, 446, 447, 449, 451, 471, 500, 501,
+                                                          502, 503, 504, 541, 554 };
+
+        public static bool VerifySmtpResponse(string strSmtpServerURL, string strEmailAddress, out string status, string hostname = "", string MailFrom = "noreply.mailchecker@yahoo.com")
         {
             //IPHostEntry hostEntry = Dns.GetHostEntry(strSmtpServerURL);
             Resolver objResolver = new Resolver();
@@ -52,8 +54,11 @@ namespace Resolver.DNS
                 return false;
             }
 
-            // string host = "PWS3.mxtoolbox.com";
             string host = Dns.GetHostName();
+            if (hostname != "")
+            {
+                host = hostname;
+            }
 
             if (response.Esmtp)
             {
@@ -193,6 +198,11 @@ namespace Resolver.DNS
             if (expectedCode.Contains(responseCode))
             {
                 return true;
+            }
+
+            if (uncertainCodes.Contains(responseCode))
+            {
+                response.ResponseText += " #UNCERTAIN# ";
             }
             return false;
         }

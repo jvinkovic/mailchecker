@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -33,6 +31,9 @@ namespace MailChecker
         private long valid = 0;
         private long invalid = 0;
         private long disposable = 0;
+
+        private int _maxLogWidth = 0;
+        private bool _isEnd = false;
 
         public MailChecker()
         {
@@ -71,7 +72,7 @@ namespace MailChecker
                 // a file was selected, open it.
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    clearAllToolStripMenuItem_Click(null, null);
+                    clearAll(true);
 
                     string filename = openFileDialog.SafeFileName;
                     string ext = filename.Substring(filename.LastIndexOf('.') + 1);
@@ -192,14 +193,22 @@ namespace MailChecker
             lvMails.TopItem = lvMails.Items.Cast<ListViewItem>().LastOrDefault();
         }
 
-        private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        private void clearAll(bool opening = false)
         {
+            if (opening)
+                return;
+
             DialogResult dialogResult = MessageBox.Show("Are you sure that you want to clear everything?", "Confirm clear all", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.No)
             {
                 return;
             }
 
+            _maxLogWidth = 0;
+
+            tbFrom.Enabled = true;
+            tbHostname.Enabled = true;
+            tbHostname.Clear();
             lblFilter.Text = "none";
             tbFind.Clear();
             tbMail.Clear();
@@ -244,8 +253,19 @@ namespace MailChecker
             stopwatch = null;
         }
 
+        private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clearAll();
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
+            _isEnd = false;
+
+            _maxLogWidth = 0;
+
+            tbFrom.Enabled = false;
+            tbHostname.Enabled = false;
             btnPause.Enabled = true;
             btnStop.Enabled = true;
 
@@ -275,7 +295,7 @@ namespace MailChecker
 
             stopwatch = new Stopwatch();
 
-            var checker = new Checker(mails.ToArray(), this);
+            var checker = new Checker(mails.ToArray(), this, tbHostname.Text.Trim(), tbFrom.Text.Trim());
             checkerThread = new Thread(new ThreadStart(checker.Check));
             checkerThread.IsBackground = true;
             timer = new System.Windows.Forms.Timer();
@@ -301,6 +321,9 @@ namespace MailChecker
 
         internal void UpdateProgress(Validity validity, int mailID, string mail, string status)
         {
+            if (_isEnd)
+                return;
+
             switch (validity)
             {
                 case Validity.Valid:
@@ -326,11 +349,16 @@ namespace MailChecker
 
                 case Validity.Unknown:
                     lvMails.Items[mailID].SubItems[1].Text = "?";
-                    lvMails.Items[mailID].BackColor = Color.Chocolate;
+                    lvMails.Items[mailID].BackColor = Color.Yellow;
                     break;
             }
 
             lvMails.Items[mailID].SubItems[2].Text = status;
+            if (status.Length * 10 > _maxLogWidth)
+            {
+                _maxLogWidth = status.Length * 10;
+                lvMails.Columns[2].Width = _maxLogWidth;
+            }
 
             if (progressBar.Value < progressBar.Maximum)
                 progressBar.Value++;
@@ -371,6 +399,8 @@ namespace MailChecker
 
         private void btnStop_Click(object sender, EventArgs e)
         {
+            _isEnd = true;
+
             progressBar.MarqueeAnimationSpeed = 0;
 
             btnStop.Enabled = false;
@@ -445,7 +475,14 @@ namespace MailChecker
 
         private void AdjustColumnsSizes(object sender, EventArgs e)
         {
-            lvMails.Columns[2].Width = lvMails.Width - lvMails.Columns[0].Width - lvMails.Columns[1].Width - 31;
+            if (lvMails.Width - lvMails.Columns[0].Width - lvMails.Columns[1].Width - 31 <= _maxLogWidth)
+            {
+                lvMails.Columns[2].Width = _maxLogWidth;
+            }
+            else
+            {
+                lvMails.Columns[2].Width = lvMails.Width - lvMails.Columns[0].Width - lvMails.Columns[1].Width - 31;
+            }
         }
 
         private void validToolStripMenuItem_Click(object sender, EventArgs e)
