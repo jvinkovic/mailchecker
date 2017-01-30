@@ -264,6 +264,7 @@ namespace MailChecker
 
             _maxLogWidth = 0;
 
+            cbYahoo.Enabled = false;
             tbFrom.Enabled = false;
             tbHostname.Enabled = false;
             btnPause.Enabled = true;
@@ -295,7 +296,7 @@ namespace MailChecker
 
             stopwatch = new Stopwatch();
 
-            var checker = new Checker(mails.ToArray(), this, tbHostname.Text.Trim(), tbFrom.Text.Trim());
+            var checker = new Checker(mails.ToArray(), this, cbYahoo.Checked, tbHostname.Text.Trim(), tbFrom.Text.Trim());
             checkerThread = new Thread(new ThreadStart(checker.Check));
             checkerThread.IsBackground = true;
             timer = new System.Windows.Forms.Timer();
@@ -323,6 +324,12 @@ namespace MailChecker
         {
             if (_isEnd)
                 return;
+
+            if (!cbYahoo.Checked && mail.Split('@')[1].ToLower() == "yahoo.com")
+            {
+                validity = Validity.Unknown;
+                status = "cannot be sure that is valid - " + status;
+            }
 
             switch (validity)
             {
@@ -403,6 +410,7 @@ namespace MailChecker
 
             progressBar.MarqueeAnimationSpeed = 0;
 
+            cbYahoo.Enabled = true;
             btnStop.Enabled = false;
             btnPause.Enabled = false;
 
@@ -543,6 +551,11 @@ namespace MailChecker
             }
 
             Clipboard.SetText(builder.ToString());
+        }
+
+        private void cbYahoo_CheckedChanged(object sender, EventArgs e)
+        {
+            // nothing
         }
     }
 }

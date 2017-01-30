@@ -27,9 +27,11 @@ namespace MailChecker
         private MailChecker _uiForm;
         private string _hostname;
         private string _from;
+        private bool _sendToYahoo;
 
-        public Checker(string[] mails, MailChecker form, string hostname = "", string from = "")
+        public Checker(string[] mails, MailChecker form, bool sendToYahoo, string hostname = "", string from = "")
         {
+            _sendToYahoo = sendToYahoo;
             _from = from;
             _hostname = hostname;
             _uiForm = form;
@@ -75,7 +77,7 @@ namespace MailChecker
                             try
                             {
                                 // check inbox
-                                bool inboxValid = CheckInbox(mail, mxRecords, out status, _hostname, _from);
+                                bool inboxValid = CheckInbox(mail, mxRecords, out status, _sendToYahoo, _hostname, _from);
 
                                 if (inboxValid)
                                 {
@@ -127,7 +129,7 @@ namespace MailChecker
             _uiForm.BeginInvoke(actionFinish);
         }
 
-        private bool CheckInbox(string mail, RecordMX[] mxRecords, out string status, string hostname = "", string from = "")
+        private bool CheckInbox(string mail, RecordMX[] mxRecords, out string status, bool sendForYahoo, string hostname = "", string from = "")
         {
             status = "-";
 
@@ -138,11 +140,11 @@ namespace MailChecker
                 {
                     if (from != "")
                     {
-                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, hostname, from);
+                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, sendForYahoo, hostname, from);
                     }
                     else
                     {
-                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, hostname);
+                        valid = Helpers.VerifySmtpResponse(mxRecords[i].EXCHANGE, mail, out status, sendForYahoo, hostname);
                     }
 
                     if (valid)

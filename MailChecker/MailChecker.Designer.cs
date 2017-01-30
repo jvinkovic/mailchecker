@@ -71,6 +71,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.tbFrom = new System.Windows.Forms.TextBox();
+            this.cbYahoo = new System.Windows.Forms.CheckBox();
             Email = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Validity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Log = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -465,12 +466,26 @@
             this.tbFrom.Size = new System.Drawing.Size(150, 20);
             this.tbFrom.TabIndex = 32;
             // 
+            // cbYahoo
+            // 
+            this.cbYahoo.AutoSize = true;
+            this.cbYahoo.Checked = true;
+            this.cbYahoo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbYahoo.Location = new System.Drawing.Point(360, 95);
+            this.cbYahoo.Name = "cbYahoo";
+            this.cbYahoo.Size = new System.Drawing.Size(303, 17);
+            this.cbYahoo.TabIndex = 33;
+            this.cbYahoo.Text = "Send mails to yahoo accounts (accurate but slower check)";
+            this.cbYahoo.UseVisualStyleBackColor = true;
+            this.cbYahoo.CheckedChanged += new System.EventHandler(this.cbYahoo_CheckedChanged);
+            // 
             // MailChecker
             // 
             this.AcceptButton = this.btnAddMail;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(814, 411);
+            this.Controls.Add(this.cbYahoo);
             this.Controls.Add(this.tbFrom);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
@@ -554,6 +569,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox tbFrom;
+        private System.Windows.Forms.CheckBox cbYahoo;
     }
 }
 

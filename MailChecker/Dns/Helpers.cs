@@ -18,9 +18,8 @@ namespace Resolver.DNS
         private static int[] uncertainCodes = new int[] { 420, 421,432, 441, 442, 446, 447, 449, 451, 471, 500, 501,
                                                           502, 503, 504, 541, 554 };
 
-        public static bool VerifySmtpResponse(string strSmtpServerURL, string strEmailAddress, out string status, string hostname = "", string MailFrom = "noreply.mailchecker@yahoo.com")
+        public static bool VerifySmtpResponse(string strSmtpServerURL, string strEmailAddress, out string status, bool sendForYahoo, string hostname = "", string MailFrom = "noreply.mailchecker@yahoo.com")
         {
-            //IPHostEntry hostEntry = Dns.GetHostEntry(strSmtpServerURL);
             Resolver objResolver = new Resolver();
             IPHostEntry hostEntry = objResolver.GetHostEntry(strSmtpServerURL);
 
@@ -89,6 +88,12 @@ namespace Resolver.DNS
             SendData(tcpSocket, string.Format("MAIL From:<{0}>\r\n", MailFrom));
             if (!CheckResponse(tcpSocket, new int[] { 200, 250 }, out response))
             {
+                if (response.ResponseText.ToLower().Contains("block"))
+                {
+                    tcpSocket.Close();
+                    throw new Exception(response.ResponseText);
+                }
+
                 SendData(tcpSocket, string.Format("MAIL From:{0}\r\n", MailFrom));
                 if (!CheckResponse(tcpSocket, new int[] { 200, 250 }, out response))
                 {
@@ -146,6 +151,27 @@ namespace Resolver.DNS
                         status = "RCPT refused: " + response.ResponseText;
                         return false;
                     }
+                }
+            }
+
+            if (sendForYahoo && strEmailAddress.Split('@')[1].ToLower() == "yahoo.com")
+            {
+                SendData(tcpSocket, "DATA\r\n");
+                if (!CheckResponse(tcpSocket, new int[] { 354 }, out response))
+                {
+                    tcpSocket.Close();
+                    status = "could not send mail - " + response.ResponseText;
+
+                    return false;
+                }
+
+                SendData(tcpSocket, "Subject: test sending\r\n\r\ntest msg\r\n.\r\n");
+                if (!CheckResponse(tcpSocket, new int[] { 200, 250, 251 }, out response))
+                {
+                    tcpSocket.Close();
+                    status = "recipient does not exist - " + response.ResponseText;
+
+                    return false;
                 }
             }
 
