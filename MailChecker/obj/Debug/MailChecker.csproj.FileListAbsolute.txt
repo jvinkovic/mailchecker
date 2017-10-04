@@ -50,3 +50,6 @@ C:\GIT\PRIVATE\mailchecker\MailChecker\obj\Debug\MailChecker.Loading.resources
 C:\GIT\PRIVATE\mailchecker\MailChecker\obj\Debug\MailChecker.MailChecker.resources
 C:\GIT\PRIVATE\mailchecker\MailChecker\obj\Debug\MailChecker.Properties.Resources.resources
 C:\GIT\PRIVATE\mailchecker\MailChecker\obj\Debug\MailChecker.csproj.GenerateResource.Cache
+D:\Projekti\GIT\mailchecker\MailChecker\bin\Debug\MailChecker.exe.config
+D:\Projekti\GIT\mailchecker\MailChecker\obj\Debug\MailChecker.exe
+D:\Projekti\GIT\mailchecker\MailChecker\obj\Debug\MailChecker.pdb
